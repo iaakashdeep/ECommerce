@@ -1,0 +1,43 @@
+﻿@model ECommerceWeb.Models.Category
+
+
+<form method="post">
+    <div class="border p-3 mt-4">
+        <div class="row pb-2">
+            <h2 class="text-primary">Create Category</h2>
+            <hr />
+        </div>
+    <div asp-validation-summary="All"></div>
+    <div class="mb-3 row p-1">
+            <label asp-for="Name" class="p-0">Category Name</label>
+        <input asp-for="Name" placeholder="Category Name" type="text" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+        <div class="mb-3 row p-1">
+        <label asp-for="DisplayOrder" class="p-0">Display Order</label>
+            <input asp-for="DisplayOrder" placeholder="Display Order" type="text" class="form-control" />
+            <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+    </div>
+    <div class="row">
+        <div class="col-6 col-md-3">
+                <button type="submit" class="btn btn-primary form-control">Create</button>
+                
+        </div>
+            <div class="col-6 col-md-3">
+                <a asp-controller="Category" asp-action="Index" class="btn btn-secondary border form-control">Back to List</a>
+        </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}
+@* Class row is for responsiveness *@
+
+@* asp-validation-summary="All" -> This will show the model error(Errors added in AddModelError behavior) as well as the property errors like; Required etc.
+asp-validation-summary="ModelOnly" -> This will show the model error(Errors added in AddModelError behavior), errors related to property will be displayed corresponding to their fields 
+
+<partial name="_ValidationScriptsPartial" /> -> A partial view calling for inbuild JS in shared folder*@.
