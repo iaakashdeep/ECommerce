@@ -1,5 +1,5 @@
-﻿using ECommerceWeb.Data;
-using ECommerceWeb.Models;
+﻿using ECommerce.DataAccess.Data;
+using ECommerce.Models.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
