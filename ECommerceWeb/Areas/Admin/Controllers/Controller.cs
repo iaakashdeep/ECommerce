@@ -2,20 +2,22 @@
 using ECommerce.Models.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using ECommerce.DataAccess.Repository.IRepository;
 
-namespace ECommerceWeb.Controllers
+namespace ECommerceWeb.Areas.Admin.Controllers
 {
+    [Area("Admin")]     //To tell the controller which area it belongs
     public class CategoryController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IUnitOfWork _context;  //As unit of work has implmentation of all the repositories so it is much cleaner and we are not using repositories directly
 
-        public CategoryController(ApplicationDbContext context)
+        public CategoryController(IUnitOfWork context)
         {
-                _context = context;
+            _context = context;
         }
         public IActionResult Index()
         {
-            List<Category> categories = _context.Categories.ToList();
+            List<Category> categories = _context.Category.GetAll().ToList();
             return View(categories);
         }
         [HttpGet]
@@ -24,7 +26,7 @@ namespace ECommerceWeb.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Create(Category category) 
+        public IActionResult Create(Category category)
         {
             if (category.Name == category.DisplayOrder.ToString())
             {
@@ -36,8 +38,8 @@ namespace ECommerceWeb.Controllers
             //}
             if (ModelState.IsValid)
             {
-                _context.Categories.Add(category);
-                _context.SaveChanges();
+                _context.Category.Add(category);
+                _context.Save();
                 TempData["SuccessMessage"] = "Category Created Successfully";
                 return RedirectToAction("Index");
             }
@@ -47,11 +49,12 @@ namespace ECommerceWeb.Controllers
         [HttpGet]
         public IActionResult Edit(int? categoryId)
         {
-            if (categoryId == null || categoryId == 0) {
+            if (categoryId == null || categoryId == 0)
+            {
                 return NotFound();
             }
             //var detCategory = _context.Categories.Where(x => x.Id == categoryId).FirstOrDefault();   OR
-            var detCategory = _context.Categories.FirstOrDefault(x => x.Id == categoryId); //We can use FirstOrdefault in any case not limited to primary key
+            var detCategory = _context.Category.GetFirstorDefault(x => x.Id == categoryId); //We can use FirstOrdefault in any case not limited to primary key
             //OR
             //var detCategory = _context.Categories.Find(categoryId);   //Find will only work in case of primary key
             if (detCategory != null)
@@ -67,8 +70,8 @@ namespace ECommerceWeb.Controllers
             ///Note: if we will not pass <input asp-for="Id" hidden /> then this method will consider the Id as 0 and the Update method in EF core will consider as a new record and insert the new record instead of modfying the existing
             if (ModelState.IsValid)
             {
-                _context.Categories.Update(category);
-                _context.SaveChanges();
+                _context.Category.Update(category);
+                _context.Save();
                 TempData["SuccessMessage"] = "Category Modified Successfully";
                 return RedirectToAction("Index");
             }
@@ -78,20 +81,22 @@ namespace ECommerceWeb.Controllers
         [HttpGet]
         public IActionResult Delete(int? categoryId)
         {
-            if (categoryId == null || categoryId == 0) {
+            if (categoryId == null || categoryId == 0)
+            {
                 return NotFound();
             }
-            var category = _context.Categories.FirstOrDefault(x=>x.Id == categoryId);
+            var category = _context.Category.GetFirstorDefault(x => x.Id == categoryId);
             return View(category);
         }
 
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePost(int? categoryId)
         {
-            var category = _context.Categories.FirstOrDefault(x => x.Id == categoryId);
-            if (category != null) {
-                _context.Categories.Remove(category);
-                _context.SaveChanges();
+            var category = _context.Category.GetFirstorDefault(x => x.Id == categoryId);
+            if (category != null)
+            {
+                _context.Category.Remove(category);
+                _context.Save();
                 TempData["SuccessMessage"] = "Category Delete Successfully";        //Passing data for 1 request only
                 return RedirectToAction("Index");
             }
