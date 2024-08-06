@@ -4,15 +4,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using ECommerce.DataAccess.Repository.IRepository;
 
-namespace ECommerceWeb.Controllers
+namespace ECommerceWeb.Areas.Admin.Controllers
 {
+    [Area("Admin")]     //To tell the controller which area it belongs
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork _context;  //As unit of work has implmentation of all the repositories so it is much cleaner and we are not using repositories directly
 
         public CategoryController(IUnitOfWork context)
         {
-                _context = context;
+            _context = context;
         }
         public IActionResult Index()
         {
@@ -25,7 +26,7 @@ namespace ECommerceWeb.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Create(Category category) 
+        public IActionResult Create(Category category)
         {
             if (category.Name == category.DisplayOrder.ToString())
             {
@@ -48,7 +49,8 @@ namespace ECommerceWeb.Controllers
         [HttpGet]
         public IActionResult Edit(int? categoryId)
         {
-            if (categoryId == null || categoryId == 0) {
+            if (categoryId == null || categoryId == 0)
+            {
                 return NotFound();
             }
             //var detCategory = _context.Categories.Where(x => x.Id == categoryId).FirstOrDefault();   OR
@@ -79,10 +81,11 @@ namespace ECommerceWeb.Controllers
         [HttpGet]
         public IActionResult Delete(int? categoryId)
         {
-            if (categoryId == null || categoryId == 0) {
+            if (categoryId == null || categoryId == 0)
+            {
                 return NotFound();
             }
-            var category = _context.Category.GetFirstorDefault(x=>x.Id == categoryId);
+            var category = _context.Category.GetFirstorDefault(x => x.Id == categoryId);
             return View(category);
         }
 
@@ -90,7 +93,8 @@ namespace ECommerceWeb.Controllers
         public IActionResult DeletePost(int? categoryId)
         {
             var category = _context.Category.GetFirstorDefault(x => x.Id == categoryId);
-            if (category != null) {
+            if (category != null)
+            {
                 _context.Category.Remove(category);
                 _context.Save();
                 TempData["SuccessMessage"] = "Category Delete Successfully";        //Passing data for 1 request only
