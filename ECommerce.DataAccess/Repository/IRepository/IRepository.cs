@@ -10,8 +10,8 @@ namespace ECommerce.DataAccess.Repository.IRepository
     //A generic interface where T is class means we can pass any class at runtime
     public interface IRepository<T> where T : class
     {
-        IEnumerable<T> GetAll();
-        T GetFirstorDefault(Expression<Func<T, bool>> filter);
+        IEnumerable<T> GetAll(string? includeProperty=null);
+        T GetFirstorDefault(Expression<Func<T, bool>> filter, string? includeProperty = null);
 
         void Add(T entity);
         void Remove(T entity);

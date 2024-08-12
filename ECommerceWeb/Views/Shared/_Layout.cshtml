@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
 
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="//cdn.datatables.net/1.11.2/css/jquery.dataTables.min.css" />
 </head>
 <body>
     <header>
@@ -37,6 +38,10 @@
                                 <li class="nav-item">
                                     <a class="dropdown-item" asp-area="Admin" asp-controller="Category" asp-action="Index">Category</a>
                                 </li>
+
+                                <li class="nav-item">
+                                    <a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index">Products</a>
+                                </li>
                                 
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="#">Something else here</a></li>
@@ -59,9 +64,14 @@
             Made with <i class="bi bi-windows"></i> by Ecommerce - <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-light">Privacy</a>
         </div>
     </footer>
+    
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="//cdn.datatables.net/1.11.2/js/jquery.dataTables.min.js" asp-append-version="true"></script>
+    <script src="https://cdn.tiny.cloud/1/afx9peoy1ecngwnw4vlh0sqow56rm2mubcddw8eaojg87m06/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

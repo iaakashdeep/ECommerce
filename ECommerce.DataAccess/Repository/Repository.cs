@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ECommerce.DataAccess.Data;
 using ECommerce.DataAccess.Repository.IRepository;
+using ECommerce.Models.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.DataAccess.Repository
@@ -20,19 +21,31 @@ namespace ECommerce.DataAccess.Repository
             _context = context;
             _dbset = _context.Set<T>();     //In ApplicationDbContext class we have set Category to DBset and new table has been made but here this class is generic and whatever class we pass at runtime the DBSet will create a
                                             //tabel for that object, because of this we are setting dbset in the constructor
+            _context.Products.Include(x=>x.Category).ToList();
+                //.Include(y=>(y as Product).CategoryId)
+
+            //By using Include it will tell when Products data will upload it will also take Category data, Include function is provided by EF core, it can include multiple properties
+            //This can only take navigational property so in Product model the navigational property for CategoryId is Category
         }
         public void Add(T entity)
         {
             _dbset.Add(entity);
         }
 
-        public IEnumerable<T> GetAll()
+        public IEnumerable<T> GetAll(string? includeProperty = null)
         {
             IQueryable<T> queryData = _dbset;
+            if (!string.IsNullOrEmpty(includeProperty))
+            {
+                foreach (var prop in includeProperty.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    queryData = queryData.Include(prop);
+                }
+            }
             return queryData.ToList();
         }
 
-        public T GetFirstorDefault(System.Linq.Expressions.Expression<Func<T, bool>> filter)
+        public T GetFirstorDefault(System.Linq.Expressions.Expression<Func<T, bool>> filter, string? includeProperty=null)
         {
             //IEnumerable<T> values = _dbset.Where(filter);
             //return values.FirstOrDefault();
@@ -41,6 +54,11 @@ namespace ECommerce.DataAccess.Repository
 
             IQueryable<T> queryData = _dbset;
             queryData = queryData.Where(filter);
+            if (!string.IsNullOrEmpty(includeProperty)) {
+                foreach (var prop in includeProperty.Split(new char[] {','},StringSplitOptions.RemoveEmptyEntries)) { 
+                    queryData=queryData.Include(prop);
+                }
+            }
             return queryData.FirstOrDefault();
         }
 
