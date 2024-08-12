@@ -10,11 +10,13 @@ namespace ECommerce.DataAccess.Data
 
         }
 
-        public DbSet<Category> Categories { get; set; }
-        //<CategoryController> here we define the entity whatever we want to create a table for in DB
+        public DbSet<Category> Categories { get; set; }  //<Category> here we define the entity whatever we want to create a table for in DB
+        public DbSet<Product> Products { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Seed();
+            modelBuilder.SeedProduct(); //Extention methods created for modelBuilder
         }
 
     }
