@@ -3,13 +3,16 @@ using ECommerce.Models.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using ECommerce.DataAccess.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
+using ECommerce.Utility;
 
 namespace ECommerceWeb.Areas.Admin.Controllers
 {
-    [Area("Admin")]     //To tell the controller which area it belongs
+    [Area("Admin")]     
+    [Authorize(Roles=StaticDetails.Role_Admin)]       //To inform this controller that only admin has the access and the page should not open without admin login
     public class CategoryController : Controller
     {
-        private readonly IUnitOfWork _context;  //As unit of work has implmentation of all the repositories so it is much cleaner and we are not using repositories directly
+        private readonly IUnitOfWork _context;  
 
         public CategoryController(IUnitOfWork context)
         {

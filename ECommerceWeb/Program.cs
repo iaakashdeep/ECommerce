@@ -3,6 +3,9 @@ using ECommerce.DataAccess.Repository;
 using ECommerce.DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using ECommerce.Utility;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,21 +16,30 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
     builder.Configuration.GetConnectionString("defaultConnection")
     ));
 
+builder.Services.AddIdentity<IdentityUser,IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+//builder.Services.AddIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
+
+
+//options => options.SignIn.RequireConfirmedAccount = true this part checks the email is confirmed or not, if we remove that even when the email is not confirmed the user would be able to login
+
+//AddEntityFrameworkStores<ApplicationDbContext>();-> this is telling the DB which has so many tables added related to Accounts, Users etc. while adding identity that those tables is binded and 
+//modified by ApplicationDbContext
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = $"/Identity/Account/Login";
+    options.LogoutPath = $"/Identity/Account/Logout";
+    options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
+});
+
+//ConfigureApplicationCookie allows you to customize the behavior of authentication cookie, such as expiration path, logout path, access denied path.
+//This should be called after AddIdentity
+
+builder.Services.AddRazorPages();  //This service will also consider Razor pages if any in the application
+
 builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
 
-//If we take Product Create view example, the total count of products will increase only once because when we hit the Post request for creating a product a new HTTP request will be generated and for this new HTTP request a new
-//instance will be provided so it will increase the count, but the create view is also demanding a instance of Iunitofwork service but this resides in the same scope of create acttion method, means while posting the data for
-//create the view will also render at the same time, so these 2 requests are in same scope so, after one click of creation it will ot increase the count
-
-//builder.Services.AddSingleton<IUnitOfWork, UnitOfWork>();
-
-//If we take Product Create view example, the total count of products will increase every time we issue a new request whether it is create or reload of page, because Singleton will provide single instance of the service
-//thorugh out the app lifecycle and that instance will be used for all HTTP requests.
-
-//builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
-
-//If we take Product Create view example, the total count of products will not increase after hitting the create button because here a count will increase when we hit Create but again a new request comes because this will not consider 
-//Create action method request and Create View request in the same scope and thasts why in Transient irrespective of the scope every time a new request comes this will give new service instance
+builder.Services.AddScoped<IEmailSender,EmailSender>();
 
 builder.Services.Configure<FormOptions>(options =>
 {
@@ -49,13 +61,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();  //this middleware should be added before Authorization because first we need to confirm the user is authenticated to view particular page before entering username and password
 app.UseAuthorization();
+app.MapRazorPages();        //Used to map the addrazorpages service
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
-
-//area=Customer we defined because the main index page lies inside Customer area

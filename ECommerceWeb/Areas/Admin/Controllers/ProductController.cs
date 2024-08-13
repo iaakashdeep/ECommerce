@@ -2,6 +2,8 @@
 using ECommerce.Models.Models;
 using ECommerce.Models.ViewModels;
 using ECommerce.Models.ViewModels;
+using ECommerce.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis;
@@ -10,10 +12,11 @@ using Microsoft.Extensions.FileProviders;
 namespace ECommerceWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles=StaticDetails.Role_Admin)]
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IWebHostEnvironment _webHostEnvironment;     //built in service we directly need to inject use for accessing the contents from the web, in this case accessing the file we are uploading
+        private readonly IWebHostEnvironment _webHostEnvironment;     
         public ProductController(IUnitOfWork unitOfWork,IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
