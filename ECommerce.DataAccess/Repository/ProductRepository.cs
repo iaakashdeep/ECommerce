@@ -33,10 +33,6 @@ namespace ECommerce.DataAccess.Repository
                     prodDetails.ImageUrl= product.ImageUrl;
                 }
             }
-
-            //==========================OR We can also write============================
-
-            //_context.Products.Update(product);  //but sometimes this method will not work as it is provided by EF core and if we try to update using third party tools like data tables this will show error while updating because of Id
         }
 
 

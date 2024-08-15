@@ -16,17 +16,18 @@ namespace ECommerce.DataAccess.Data
         public DbSet<Product> Products { get; set; }
 
         public DbSet<ApplicationUsers> ApplicationUsers { get; set; }
+
+        public DbSet<Company> Companies { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Seed();
-            modelBuilder.SeedProduct(); 
+            modelBuilder.SeedProduct();
+            modelBuilder.SeedCompany();
         }
 
     }
 }
 
-//IdentityDbContext this class is used instead of DBCOntext because this will provide Identity secutity features
 
-//base.OnModelCreating(modelBuilder); we have to write this line otherwise primary key error will come

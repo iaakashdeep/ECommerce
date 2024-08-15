@@ -105,5 +105,13 @@ namespace ECommerce.Models.Models
                 }
                 );
         }
+
+        public static void SeedCompany(this ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Company>().HasData(
+                new Company { Id = 1, Name = "Manufacturing", State="Canada", StreetAddress="Montreal", City="Otawa",PhoneNumber="5412125454",PostalCode="360041" },
+                new Company { Id = 2, Name = "Research and Development", State = "Illinois", StreetAddress = "Illinois 36", City = "Minnesota", PhoneNumber = "50055454", PostalCode = "6004102" }
+                );
+        }
     }
 }
