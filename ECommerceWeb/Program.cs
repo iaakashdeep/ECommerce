@@ -17,13 +17,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
     ));
 
 builder.Services.AddIdentity<IdentityUser,IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
-//builder.Services.AddIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
-
-
-//options => options.SignIn.RequireConfirmedAccount = true this part checks the email is confirmed or not, if we remove that even when the email is not confirmed the user would be able to login
-
-//AddEntityFrameworkStores<ApplicationDbContext>();-> this is telling the DB which has so many tables added related to Accounts, Users etc. while adding identity that those tables is binded and 
-//modified by ApplicationDbContext
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -32,10 +25,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
 });
 
-//ConfigureApplicationCookie allows you to customize the behavior of authentication cookie, such as expiration path, logout path, access denied path.
-//This should be called after AddIdentity
 
-builder.Services.AddRazorPages();  //This service will also consider Razor pages if any in the application
+
+builder.Services.AddRazorPages();  
 
 builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
 
@@ -61,9 +53,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseAuthentication();  //this middleware should be added before Authorization because first we need to confirm the user is authenticated to view particular page before entering username and password
+app.UseAuthentication();  
 app.UseAuthorization();
-app.MapRazorPages();        //Used to map the addrazorpages service
+app.MapRazorPages();        
 
 app.MapControllerRoute(
     name: "default",
