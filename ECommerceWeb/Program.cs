@@ -7,36 +7,68 @@ using Microsoft.AspNetCore.Identity;
 using ECommerce.Utility;
 using Microsoft.AspNetCore.Identity.UI.Services;
 
+//This will set up the Web Host and Generic Host in background
+//we can configure services, logging using builder.Host
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+#region Configuring services through generic Host
+builder.Host.ConfigureServices((hostcontext, services) =>
+{
+    // Add services to the container.
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
-    builder.Configuration.GetConnectionString("defaultConnection")
+    services.AddControllersWithViews();
+    //services.AddControllersWithViews(options=>
+    //{
+    //    options.Filters.Add<BaseExceptionController>();
+    //});
+
+
+
+    //services.AddHostedService<LoggingUtility>();
+
+    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
+    hostcontext.Configuration.GetConnectionString("defaultConnection")
     ));
 
-builder.Services.AddIdentity<IdentityUser,IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+    services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
-builder.Services.ConfigureApplicationCookie(options =>
+    services.ConfigureApplicationCookie(options =>
+    {
+        options.LoginPath = $"/Identity/Account/Login";
+        options.LogoutPath = $"/Identity/Account/Logout";
+        options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
+    });
+
+
+    services.AddRazorPages();
+
+    services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+    services.AddScoped<IEmailSender, EmailSender>();
+
+    services.Configure<FormOptions>(options =>
+    {
+        options.MultipartBodyLengthLimit = 104857600; // 100 MB
+    });
+}
+);
+#endregion
+
+#region Configure Logging through Generic Host
+
+builder.Host.ConfigureLogging(logging =>
 {
-    options.LoginPath = $"/Identity/Account/Login";
-    options.LogoutPath = $"/Identity/Account/Logout";
-    options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
-});
+    logging.ClearProviders();
+    logging.AddConsole();
+}
+);
+
+#endregion
+
+//The above methods use Generic Host explicitly for configuring services, but you can directly use builder.Services to do that as we did in other modules
 
 
 
-builder.Services.AddRazorPages();  
-
-builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
-
-builder.Services.AddScoped<IEmailSender,EmailSender>();
-
-builder.Services.Configure<FormOptions>(options =>
-{
-    options.MultipartBodyLengthLimit = 104857600; // 100 MB
-});
 
 
 var app = builder.Build();

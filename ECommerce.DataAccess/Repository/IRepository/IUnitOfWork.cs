@@ -11,6 +11,8 @@ namespace ECommerce.DataAccess.Repository.IRepository
         ICategoryRepository Category { get;}
         IProductRepository Product { get;}
         ICompanyRepository Company { get;}
+        IShoppingCart shoppingCart { get;}
+        IApplicationUser applicationUser { get;}
         void Save();
     }
 }
