@@ -25,16 +25,20 @@ namespace ECommerce.DataAccess.Repository
                 //.Include(y=>(y as Product).CategoryId)
 
             //By using Include it will tell when Products data will upload it will also take Category data, Include function is provided by EF core, it can include multiple properties
-            //This can only take navigational property so in Product model the navigational property for CategoryId is Category
+            //This can only take navigational property so in Product model the navigational property for CategoryId is Category, we can pass other properties as well , seperated
         }
         public void Add(T entity)
         {
             _dbset.Add(entity);
         }
 
-        public IEnumerable<T> GetAll(string? includeProperty = null)
+        public IEnumerable<T> GetAll(System.Linq.Expressions.Expression<Func<T, bool>>? filter=null,string? includeProperty = null)
         {
             IQueryable<T> queryData = _dbset;
+            if(filter != null)
+            {
+                queryData = queryData.Where(filter);
+            }
             if (!string.IsNullOrEmpty(includeProperty))
             {
                 foreach (var prop in includeProperty.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
@@ -45,14 +49,18 @@ namespace ECommerce.DataAccess.Repository
             return queryData.ToList();
         }
 
-        public T GetFirstorDefault(System.Linq.Expressions.Expression<Func<T, bool>> filter, string? includeProperty=null)
+        public T GetFirstorDefault(System.Linq.Expressions.Expression<Func<T, bool>> filter, string? includeProperty=null, bool tracked=false)
         {
-            //IEnumerable<T> values = _dbset.Where(filter);
-            //return values.FirstOrDefault();
-
-            //==================OR===========================
-
-            IQueryable<T> queryData = _dbset;
+            IQueryable<T> queryData;
+            if (tracked)
+            {
+                queryData = _dbset;
+            }
+            else
+            {
+                queryData = _dbset.AsNoTracking();      //AsNoTracking() used to tell the EF core to not track the changes automatically
+            }
+            
             queryData = queryData.Where(filter);
             if (!string.IsNullOrEmpty(includeProperty)) {
                 foreach (var prop in includeProperty.Split(new char[] {','},StringSplitOptions.RemoveEmptyEntries)) { 
