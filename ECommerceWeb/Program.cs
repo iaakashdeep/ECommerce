@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using ECommerce.Utility;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Stripe;
 
 //This will set up the Web Host and Generic Host in background
 //we can configure services, logging using builder.Host
@@ -29,6 +30,9 @@ builder.Host.ConfigureServices((hostcontext, services) =>
     services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
     hostcontext.Configuration.GetConnectionString("defaultConnection")
     ));
+
+    //This service will automatically inject the stripe values from appsettings to properties in StripeSetting class
+    services.Configure<StripeSettings>(hostcontext.Configuration.GetSection("Stripe"));
 
     services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
@@ -83,7 +87,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();        // We need to set the API key for stripe
 app.UseRouting();
 app.UseAuthentication();  
 app.UseAuthorization();
