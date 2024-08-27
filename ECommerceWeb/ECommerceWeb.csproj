@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Areas\Admin\Views\Order\PaymentConfirmation.cshtml" />
     <Content Remove="Areas\Admin\Views\Product\Delete.cshtml" />
   </ItemGroup>
 
@@ -30,6 +31,7 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Areas\Admin\Views\Category\Create.cshtml" />
+    <_ContentIncludedByDefault Remove="Areas\Admin\Views\Order\PaymentConfirmation.cshtml" />
     <_ContentIncludedByDefault Remove="Areas\Customer\Views\Home\Details.cshtml" />
   </ItemGroup>
 
@@ -47,6 +49,14 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Areas\Customer\Views\Home\Details.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Areas\Admin\Views\Order\PaymentConfirmation.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Areas\Admin\Views\Order\PaymentConfirmation.cshtml" />
   </ItemGroup>
 
 </Project>
