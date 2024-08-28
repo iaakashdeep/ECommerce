@@ -69,6 +69,9 @@ namespace ECommerce.DataAccess.DBInitializer
                     City = "Bengaluru",
                     State = "Karnataka"
                 }, "1616@Aakash").GetAwaiter().GetResult();
+
+                ApplicationUsers user = _dbCOntext.ApplicationUsers.FirstOrDefault(x => x.Email == "admin_new@gmail.com");
+                _userManager.AddToRoleAsync(user,StaticDetails.Role_Admin).GetAwaiter().GetResult();        //To make the newly created user as admin
             }
             return;
             
