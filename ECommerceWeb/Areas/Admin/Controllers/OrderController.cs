@@ -176,7 +176,7 @@ namespace ECommerceWeb.Areas.Admin.Controllers
             orderViewModel.orderDetail = _unitOfWork.OrderDetail.GetAll(x => x.OrderHeaderId == orderViewModel.orderHeader.Id, includeProperty: "Product");
             //Stripe logic from googl
 
-            var domain = "https://localhost:7154/";
+            var domain = Request.Scheme + "://" + Request.Host.Value;
             var options = new Stripe.Checkout.SessionCreateOptions
             {
                 SuccessUrl = domain + $"admin/order/PaymentConfirmation?orderHeaderId={orderViewModel.orderHeader.Id}",    //Redirecting to this URL doesn't give the details from stripe so we have to check the session id again in Order Confirmation Action

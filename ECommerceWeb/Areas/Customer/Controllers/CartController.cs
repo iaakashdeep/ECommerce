@@ -196,7 +196,7 @@ namespace ECommerceWeb.Areas.Customer.Controllers
 			{
                 //Stripe logic from googl
 
-                var domain = "https://localhost:7154/";
+                var domain = Request.Scheme + "://" + Request.Host.Value;       //We can't hardcode the URL because when we host this app and send Back to Application button from Stripe it will throw error
                 var options = new Stripe.Checkout.SessionCreateOptions
                 {
                     SuccessUrl = domain + $"customer/cart/OrderConfirmation?id={_cartViewModel.orderHeader.Id}",    //Redirecting to this URL doesn't give the details from stripe so we have to check the session id again in Order Confirmation Action
