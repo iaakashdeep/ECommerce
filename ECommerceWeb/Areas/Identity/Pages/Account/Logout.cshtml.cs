@@ -27,6 +27,8 @@ namespace ECommerceWeb.Areas.Identity.Pages.Account
         {
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");
+            //HttpContext.Session.Clear();        //While logging out the cart value should be clear out for the user
+            //Removed line: 30 from here because this has been added in View Component
             if (returnUrl != null)
             {
                 return LocalRedirect(returnUrl);

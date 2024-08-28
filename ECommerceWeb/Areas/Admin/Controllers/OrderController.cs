@@ -15,7 +15,7 @@ namespace ECommerceWeb.Areas.Admin.Controllers
 {
 	[Area("Admin")]
     [Authorize]
-	public class OrderController : Controller
+    public class OrderController : Controller
 	{
 		private IUnitOfWork _unitOfWork;
         [BindProperty]

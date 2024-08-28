@@ -1,12 +1,14 @@
 ﻿using ECommerce.DataAccess.Repository.IRepository;
 using ECommerce.Models.Models;
 using ECommerce.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace ECommerceWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles =StaticDetails.Role_Admin)]
     [ServiceFilter(typeof(BaseExceptionController))]        //Adding custom exception filter
     public class CompanyController : Controller
     {

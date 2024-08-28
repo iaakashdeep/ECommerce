@@ -2,12 +2,24 @@
 using ECommerce.Models.Models;
 using ECommerce.Models.ViewModels;
 using ECommerce.Utility;
+using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore;
+using Mono.TextTemplating;
+using Stripe;
 using Stripe.BillingPortal;
 using Stripe.Checkout;
 using Stripe.FinancialConnections;
+using System.CodeDom.Compiler;
+using System;
 using System.Security.Claims;
+using static System.Formats.Asn1.AsnWriter;
+using static System.Net.Mime.MediaTypeNames;
+using System.Xml.Linq;
 
 namespace ECommerceWeb.Areas.Customer.Controllers
 {
@@ -63,26 +75,30 @@ namespace ECommerceWeb.Areas.Customer.Controllers
 
         public IActionResult Minus(int? cartId)
         {
-            var cartTotalfromDB = _unitOfWork.shoppingCart.GetFirstorDefault(x => x.Id == cartId);
+            var cartTotalfromDB = _unitOfWork.shoppingCart.GetFirstorDefault(x => x.Id == cartId,tracked:true);
             if (cartTotalfromDB.Count <= 1)
             {
+                HttpContext.Session.SetInt32(ECommerce.Utility.StaticDetails.SessionDetails, _unitOfWork.shoppingCart.GetAll(x => x.ApplicationUserId == cartTotalfromDB.ApplicationUserId).Count() - 1);
                 _unitOfWork.shoppingCart.Remove(cartTotalfromDB);
             }
             else
             {
-
                 cartTotalfromDB.Count -= 1;
                 _unitOfWork.shoppingCart.Update(cartTotalfromDB);
             }
-
-
             _unitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Remove(int? cartId)
         {
-            var cartTotalfromDB = _unitOfWork.shoppingCart.GetFirstorDefault(x => x.Id == cartId);
+            //System.InvalidOperationException
+            //Message = The instance of entity type 'ShoppingCart' cannot be tracked because another instance with the same key value for { 'Id'} is already being tracked.When attaching existing entities,
+            //ensure that only one entity instance with a given key value is attached.Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see the conflicting key values.
+  
+
+            var cartTotalfromDB = _unitOfWork.shoppingCart.GetFirstorDefault(x => x.Id == cartId,tracked:true);
+            HttpContext.Session.SetInt32(ECommerce.Utility.StaticDetails.SessionDetails, _unitOfWork.shoppingCart.GetAll(x => x.ApplicationUserId == cartTotalfromDB.ApplicationUserId).Count()-1);
             _unitOfWork.shoppingCart.Remove(cartTotalfromDB);
             _unitOfWork.Save();
             return RedirectToAction(nameof(Index));
@@ -237,7 +253,7 @@ namespace ECommerceWeb.Areas.Customer.Controllers
                     _unitOfWork.OrderHeader.UpdateStatus(id,StaticDetails.StatusApproved,StaticDetails.PaymentStatusApproved);
                     _unitOfWork.Save();
                 }
-
+                HttpContext.Session.Clear();            //Added this line because after payment from Stripe the cart count hasn't been cleared
             }
             List<ShoppingCart> shoppingCart=_unitOfWork.shoppingCart.GetAll(x=>x.ApplicationUserId==orderHeaderDetails.ApplicationUserId).ToList();
             _unitOfWork.shoppingCart.RemoveRange(shoppingCart);

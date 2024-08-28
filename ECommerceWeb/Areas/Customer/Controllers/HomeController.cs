@@ -21,6 +21,14 @@ namespace ECommerceWeb.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
+            //CHecking the session for cart total on  login and logout
+            var claimidentity = (ClaimsIdentity)User.Identity;
+            var claim = claimidentity.FindFirst(ClaimTypes.NameIdentifier);
+            if(claim!=null)
+            {
+                HttpContext.Session.SetInt32(ECommerce.Utility.StaticDetails.SessionDetails, _unitOfWork.shoppingCart.GetAll(x => x.ApplicationUserId == claim.Value).Count());
+            }
+
             var prodList = _unitOfWork.Product.GetAll(includeProperty: "Category");
             return View(prodList);
         }
@@ -51,17 +59,19 @@ namespace ECommerceWeb.Areas.Customer.Controllers
             if (cartDetails != null) {
                 cartDetails.Count += cart.Count;
                 _unitOfWork.shoppingCart.Update(cartDetails);
-
+                _unitOfWork.Save();
                 //Even though if we don't write _unitOfWork.shoppingCart.Update(cartDetails); this will update the DB because EF core is smart enough to see the count property is updating so it will update the table 
                 //as it is checking the table constantly, for that not to be happen we need to make the EF core monitor or tracked property to false and we have done in Repository class and interface
             }
             else
             {
                 _unitOfWork.shoppingCart.Add(cart);
+                _unitOfWork.Save();
+                HttpContext.Session.SetInt32(ECommerce.Utility.StaticDetails.SessionDetails, _unitOfWork.shoppingCart.GetAll(x => x.ApplicationUserId == userId).Count());
             }
 
             
-            _unitOfWork.Save();
+            
             TempData["Success"] = "Cart updated successfully!!";
             return RedirectToAction(nameof(Index));
         }

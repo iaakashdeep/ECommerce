@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using ECommerce.Utility;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Stripe;
+using ECommerce.DataAccess.DBInitializer;
 
 //This will set up the Web Host and Generic Host in background
 //we can configure services, logging using builder.Host
@@ -27,13 +28,22 @@ builder.Host.ConfigureServices((hostcontext, services) =>
 
     //services.AddHostedService<LoggingUtility>();
 
+    #region Connection String
+
     services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
     hostcontext.Configuration.GetConnectionString("defaultConnection")
     ));
 
+    #endregion
+
+    #region Stripe for Payment Gateway Service
+
     //This service will automatically inject the stripe values from appsettings to properties in StripeSetting class
     services.Configure<StripeSettings>(hostcontext.Configuration.GetSection("Stripe"));
 
+    #endregion
+
+    #region Identity using .NET
     services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
     services.ConfigureApplicationCookie(options =>
@@ -43,6 +53,30 @@ builder.Host.ConfigureServices((hostcontext, services) =>
         options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
     });
 
+    #endregion
+
+    #region Session Logic
+    services.AddDistributedMemoryCache();
+    services.AddSession(options =>
+    {
+        options.IdleTimeout = TimeSpan.FromMinutes(100);
+        options.Cookie.HttpOnly = true;
+        options.Cookie.IsEssential = true;
+    });
+    #endregion
+
+    #region Facebook Authentication using OAuth
+    services.AddAuthentication().AddFacebook(options =>
+    {
+        options.AppId = "886007550040286";
+        options.AppSecret = "cbcf41c7242f292b55fef3f92e8e10fa";
+    });
+    #endregion
+
+    #region Service for Seeding DB for first time if roles and user hasn't been created
+
+    services.AddScoped<IDBInitializer, DBInitializer>();
+    #endregion
 
     services.AddRazorPages();
 
@@ -91,6 +125,8 @@ StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey"
 app.UseRouting();
 app.UseAuthentication();  
 app.UseAuthorization();
+app.UseSession();           //To use sessions in request pipeline
+SeedDatabase();             //For seeding DB first time using DB initializer
 app.MapRazorPages();        
 
 app.MapControllerRoute(
@@ -98,3 +134,14 @@ app.MapControllerRoute(
     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+
+//
+void SeedDatabase()
+{
+    using(var scope=app.Services.CreateScope())
+    {
+        var dbInitializer=scope.ServiceProvider.GetRequiredService<IDBInitializer>();
+        dbInitializer.Initialize();
+    }
+}

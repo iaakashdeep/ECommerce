@@ -215,7 +215,15 @@ namespace ECommerceWeb.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        if(!User.IsInRole(StaticDetails.Role_Admin))
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                        }
+                        else
+                        {
+                            TempData["SuccessMessage"] = "User Created Successfully!!";
+                        }
+                        
                         return LocalRedirect(returnUrl);
                     }
                 }
