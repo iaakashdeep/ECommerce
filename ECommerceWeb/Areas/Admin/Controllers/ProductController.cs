@@ -74,21 +74,21 @@ namespace ECommerceWeb.Areas.Admin.Controllers
                         string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);     //Will append the filename coming from the form to the Guid
                         string productPath = Path.Combine(wwwRootPath, @"images\product");        //wwwRootPath will give the path for www location appending images\product will give full product path where we want to upload the file
 
-                        if (!string.IsNullOrEmpty(productVM.Product.ImageUrl))
-                        {
-                            var oldImagePath = Path.Combine(wwwRootPath, productVM.Product.ImageUrl.TrimStart('\\'));
-                            if (System.IO.File.Exists(oldImagePath))
-                            {
-                                System.IO.File.Delete(oldImagePath);
-                            }
-                        }
+                        //if (!string.IsNullOrEmpty(productVM.Product.ImageUrl))
+                        //{
+                        //    var oldImagePath = Path.Combine(wwwRootPath, productVM.Product.ImageUrl.TrimStart('\\'));
+                        //    if (System.IO.File.Exists(oldImagePath))
+                        //    {
+                        //        System.IO.File.Delete(oldImagePath);
+                        //    }
+                        //}
 
                         using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
                         {
                             file.CopyTo(fileStream);        //Copying the file to fileStream which has full path of where to store the file
                         }
 
-                        productVM.Product.ImageUrl = @"\images\product\" + fileName;
+                        //productVM.Product.ImageUrl = @"\images\product\" + fileName;
                     }
                     if (productVM.Product.Id != 0)
                     {
@@ -162,11 +162,11 @@ namespace ECommerceWeb.Areas.Admin.Controllers
         {
             var productDetails = _unitOfWork.Product.GetFirstorDefault(x => x.Id == productId);
             if (productDetails != null) {
-                var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, productDetails.ImageUrl.TrimStart('\\'));
-                if (System.IO.File.Exists(oldImagePath))
-                {
-                    System.IO.File.Delete(oldImagePath);
-                }
+                //var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, productDetails.ImageUrl.TrimStart('\\'));
+                //if (System.IO.File.Exists(oldImagePath))
+                //{
+                //    System.IO.File.Delete(oldImagePath);
+                //}
 
                 _unitOfWork.Product.Remove(productDetails);
                 _unitOfWork.Save();

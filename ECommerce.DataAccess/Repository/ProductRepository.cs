@@ -29,9 +29,9 @@ namespace ECommerce.DataAccess.Repository
                 prodDetails.Price50 = product.Price50;
                 prodDetails.ISBN = product.ISBN;
                 prodDetails.Author = product.Author;
-                if (product.ImageUrl != null) { 
-                    prodDetails.ImageUrl= product.ImageUrl;
-                }
+                //if (product.ImageUrl != null) { 
+                //    prodDetails.ImageUrl= product.ImageUrl;
+                //}
             }
         }
 

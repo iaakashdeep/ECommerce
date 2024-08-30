@@ -25,5 +25,7 @@ namespace ECommerce.Models.Models
         public Company Company { get; set; }
 
         //Only the company user have company id
+        [NotMapped]
+        public string Role { get; set; }
     }
 }

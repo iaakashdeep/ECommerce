@@ -44,7 +44,7 @@ namespace ECommerce.Models.Models
 
         //public int MyProperty { get; set; }
 
-        public string? ImageUrl { get; set; }
+        //public string? ImageUrl { get; set; }  //removing because we are adding image from sepearte image table
     }
 }
 
